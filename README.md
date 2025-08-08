@@ -96,10 +96,6 @@ SAFEWORD=CONFIRMDELETE
 
 ---
 
-## Demo video link
-```
-https://youtube.com/shorts/dVi3krtPNUU?feature=share
-```
 
 ### 4️⃣ Running n8n with Docker
 
@@ -142,8 +138,15 @@ LIST <Folder Name>
 DELETE <File Name>
 MOVE <File Name>
 SUMMARY <File Name>
+
 ```
 
+---
+
+# Demo video link
+```
+https://youtube.com/shorts/dVi3krtPNUU?feature=share
+```
 
 ---
 
