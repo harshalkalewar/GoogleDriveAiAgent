@@ -1,0 +1,10 @@
+helper-scripts/docker-run.sh
+
+#!/bin/bash
+docker run -it --rm \
+  --name n8n \
+  -p 5678:5678 \
+  --env-file .env \
+  -v $(pwd)/.n8n:/home/node/.n8n \
+  n8nio/n8n
+

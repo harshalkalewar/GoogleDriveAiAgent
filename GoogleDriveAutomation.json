@@ -1,0 +1,723 @@
+{
+  "name": "GoogleDriveAutomation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-hook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c94debd9-96c1-4db3-920e-a353e93dc64a",
+      "name": "Webhook",
+      "webhookId": "779bc5f4-7256-45ea-a338-926df59caed6"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst msg = $json.body?.Body?.trim() || \"\";\nconst [command, ...args] = msg.split(\" \");\n\nreturn [\n  {\n    json: {\n      command: command.toLowerCase(),\n      args: args.join(\" \"),\n      original: msg,\n      from: $json.body?.From || \"\",\n      profileName: $json.body?.ProfileName || \"\"\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "90f14689-1e7c-4d60-a906-ef3145c647d5",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json[\"command\"]}}",
+                    "rightValue": "list",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "9c677f04-7477-4b54-9e7c-7d41daf429f9"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "17430f2b-3086-41e3-9db2-5aa15f5c1463",
+                    "leftValue": "={{$json[\"command\"]}}",
+                    "rightValue": "move",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4f011ee3-26fd-48aa-9208-40a72154dcba",
+                    "leftValue": "={{$json[\"command\"]}}",
+                    "rightValue": "delete",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "61b40bb4-e058-446b-bbfd-63d668d920e3",
+                    "leftValue": "={{$json[\"command\"]}}",
+                    "rightValue": "summarise",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        496,
+        -32
+      ],
+      "id": "514a9ecd-80da-4dc9-a99a-c89d114596e9",
+      "name": "Command_Router"
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{$json[\"id\"]}}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1-EMvh01xKSsj-AbqN2R9vZnOupDsmlnB",
+          "mode": "list",
+          "cachedResultName": "dummy_project",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1-EMvh01xKSsj-AbqN2R9vZnOupDsmlnB"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1696,
+        -32
+      ],
+      "id": "1927b1d5-9eed-4989-b849-bf53269c2bc2",
+      "name": "Move file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JeQFefDCGKUJNSOD",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "value": "={{$json[\"id\"]}}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1568,
+        144
+      ],
+      "id": "2931cb96-cffc-4670-b175-12a746e32043",
+      "name": "Delete a file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JeQFefDCGKUJNSOD",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        384
+      ],
+      "id": "dd1e5d9d-46ab-42a0-8fc9-a773ae82d01f",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Summarize the following text : {{ $json['text'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1936,
+        384
+      ],
+      "id": "23846d8d-7e87-4a12-812d-8cc1a28c82c7",
+      "name": "Summarize",
+      "credentials": {
+        "openAiApi": {
+          "id": "VmtBW8xHiQQcq6qt",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1f33a55-e574-470a-b631-43dcf4b9f907",
+              "name": "log_summary",
+              "value": "={{ $json[\"message\"]['content']}}",
+              "type": "string"
+            },
+            {
+              "id": "cbf5841a-4ea9-460d-bf68-8149ed9dcabb",
+              "name": "log_from",
+              "value": "={{ $json[\"from\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2272,
+        384
+      ],
+      "id": "01744b36-2460-4d24-8c42-067a8d715ebd",
+      "name": "Logger"
+    },
+    {
+      "parameters": {
+        "from": "+14155238886",
+        "to": "+919920911876",
+        "toWhatsapp": true,
+        "message": "=Here’s the summary of your document: {{ $json[\"log_summary\"] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        2464,
+        384
+      ],
+      "id": "26e71f35-342d-4875-878d-d9fb1188c12c",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "credentials": {
+        "twilioApi": {
+          "id": "8I05Zv8cQj9cWN4l",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $json['args'] }}",
+        "limit": 1,
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1424,
+        -32
+      ],
+      "id": "2739fefd-688f-488b-aa3d-37be6596527c",
+      "name": "Search file to move",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JeQFefDCGKUJNSOD",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "+14155238886",
+        "to": "+919920911876",
+        "toWhatsapp": true,
+        "message": "File moved succesfully!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        -32
+      ],
+      "id": "4375e884-b857-44fa-bbc4-ab5896304c64",
+      "name": "Send an SMS/MMS/WhatsApp message1",
+      "credentials": {
+        "twilioApi": {
+          "id": "8I05Zv8cQj9cWN4l",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $json['args'] }}",
+        "limit": 1,
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1328,
+        144
+      ],
+      "id": "90e3c50d-e700-403c-82e3-3518379389d9",
+      "name": "Search file to delete",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JeQFefDCGKUJNSOD",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "+14155238886",
+        "to": "+919920911876",
+        "toWhatsapp": true,
+        "message": "FIle deleted successfully!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1824,
+        144
+      ],
+      "id": "d3b97eb3-3d1f-4356-b38d-5af8a4b3e34a",
+      "name": "Send an SMS/MMS/WhatsApp message2",
+      "credentials": {
+        "twilioApi": {
+          "id": "8I05Zv8cQj9cWN4l",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $json['args'] }} ",
+        "limit": 1,
+        "filter": {},
+        "options": {
+          "fields": [
+            "name",
+            "id",
+            "mimeType"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1264,
+        -208
+      ],
+      "id": "d3efa9d1-8867-458c-9608-fea78094933d",
+      "name": "Select folder to list files",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JeQFefDCGKUJNSOD",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json['id'] }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf",
+              "drawingsToFormat": "application/pdf",
+              "slidesToFormat": "application/pdf",
+              "sheetsToFormat": "application/pdf"
+            }
+          },
+          "fileName": "={{ $json.args }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1440,
+        384
+      ],
+      "id": "d03b4eec-247c-4209-aac6-b9cbea11d2b3",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JeQFefDCGKUJNSOD",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $json['args'] }}",
+        "limit": 1,
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1152,
+        384
+      ],
+      "id": "9a693960-510a-471f-9e84-77fab442d88f",
+      "name": "Search files and folders1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JeQFefDCGKUJNSOD",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "=parents in '{{$json[\"id\"]}}'",
+        "returnAll": true,
+        "filter": {
+          "whatToSearch": "all"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1520,
+        -208
+      ],
+      "id": "0cad05f4-942f-4637-b640-a38fea0004ab",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "JeQFefDCGKUJNSOD",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "+14155238886",
+        "to": "+919920911876",
+        "toWhatsapp": true,
+        "message": "=List of files : {{ $json['name'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        -208
+      ],
+      "id": "0f604bae-7603-4ea3-af9e-c4ef312f7ccd",
+      "name": "Send an SMS/MMS/WhatsApp message3",
+      "credentials": {
+        "twilioApi": {
+          "id": "8I05Zv8cQj9cWN4l",
+          "name": "Twilio account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Command_Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Command_Router": {
+      "main": [
+        [
+          {
+            "node": "Select folder to list files",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Search file to move",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Search file to delete",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Search files and folders1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Logger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logger": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send an SMS/MMS/WhatsApp message": {
+      "main": [
+        []
+      ]
+    },
+    "Search file to move": {
+      "main": [
+        [
+          {
+            "node": "Move file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move file": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search file to delete": {
+      "main": [
+        [
+          {
+            "node": "Delete a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete a file": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select folder to list files": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders1": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a6cbe270-33b4-4a57-9e07-acb250e6609f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bad990d42084dc693ce246ae443bcde0d3bc1d2cd099f295bc79ba1c7e993a8a"
+  },
+  "id": "fc0e4TR6LStNEZEX",
+  "tags": []
+}
